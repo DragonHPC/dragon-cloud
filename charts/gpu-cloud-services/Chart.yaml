@@ -4,7 +4,7 @@ annotations:
   catalog.cattle.io/permits-os: linux
 apiVersion: v2
 appVersion: 0.12.0
-description: Dragon cluster running the GPE Cloud Services Batch service
+description: Dragon cluster running the GPU Cloud Services Batch service
 home: http://dragonhpc.org
 icon: https://dragonhpc.org/wp-content/uploads/2025/03/Color-logo-no-background.png
 keywords:

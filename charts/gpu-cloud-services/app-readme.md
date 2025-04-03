@@ -51,8 +51,8 @@ that share a common Juypter notebook.
 1. Using `kubectl`, delete the previously created secret.
 
    ```
-   # set APP_NAME= value
-   # kubectl delete secret dragon-$APP_NAME-jupyter-token
+   set APP_NAME= value
+   kubectl delete secret dragon-$APP_NAME-jupyter-token
    ```
 ## Remove access to Dragon Telemetry / Graphana
 

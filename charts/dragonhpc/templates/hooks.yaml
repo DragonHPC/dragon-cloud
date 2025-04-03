@@ -14,7 +14,7 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
         - |
-          cd dragon-develop/helm-test && \
+          cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop && \
           # use the Backend Job name to distinguish the log files to delete
           rm -f *{{ include "dragon.fullname" . }}-backend*.log
         volumeMounts:

@@ -1,12 +1,25 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "dragon.fullname" . }}
+  name: {{ .Values.jupyterService.name }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.jupyterService.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
-      protocol: {{ .Values.service.protocol }}
+    - port: {{ .Values.jupyterService.port }}
+      targetPort: {{ .Values.jupyterService.targetPort }}
+      protocol: {{ .Values.jupyterService.protocol }}
   selector:
     node_index: {{ include "dragon.serviceSelector" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.telemetryService.name }}
+spec:
+  type: {{ .Values.telemetryService.type }}
+  ports:
+    - port: {{ .Values.telemetryService.port }}
+      targetPort: {{ .Values.telemetryService.targetPort }}
+      protocol: {{ .Values.telemetryService.protocol }}
+  selector:
+    telemetry: {{ include "dragon.telemetryServiceSelector" . }}

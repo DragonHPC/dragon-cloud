@@ -52,6 +52,20 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
+            - name: FRONTEND_PORT
+              value: "8080"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
             - name: POD_UID
               valueFrom:
                 fieldRef:

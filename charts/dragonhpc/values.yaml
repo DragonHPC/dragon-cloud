@@ -22,7 +22,7 @@ frontend:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: mkalantzi/dragondev
+    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
     pullPolicy: IfNotPresent
 
@@ -35,21 +35,22 @@ frontend:
 
   args:
     - |
-      cd dragon-develop;
-      if [[ ! -d helm-test ]]; then
-        cp -R hpc-pe-dragon-dragon-k8s-merge-develop/ helm-test/;
-      fi
-      cd helm-test;
+      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
+      # cd dragon-develop;
+      # if [[ ! -d helm-test ]]; then
+      #   cp -R hpc-pe-dragon-dragon-k8s-merge-develop/ helm-test/;
+      # fi
+      # cd helm-test;
       apt-get update;
       . hack/setup;
-      dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
+      # dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
       # dragon -l actor_file=DEBUG -t hsta examples/multiprocessing/p2p_lat.py --dragon;
-      # dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+      dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
 
   env: {}
 
   ports:
-    - containerPort: 8081
+    - containerPort: 8080
 
   # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
   serviceAccount:
@@ -137,7 +138,7 @@ backend:
   nnodes: 2
 
   image:
-    repository: mkalantzi/dragondev
+    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
     pullPolicy: IfNotPresent
 
@@ -151,7 +152,8 @@ backend:
     - |
       apt-get update;
       ucx_info -v;
-      cd dragon-develop/helm-test;
+      # cd dragon-develop/helm-test;
+      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
       . hack/setup;
       ldconfig -p | grep ucp;
       ldd /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/src/lib/libdfabric_ucx.so;
@@ -164,6 +166,7 @@ backend:
 
   ports:
     - containerPort: 8081
+    - containerPort: 4242
 
   serviceAccount:
     create: true
@@ -231,13 +234,21 @@ backend:
 
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
+jupyterService:
+  name: backend-pods-service
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: ClusterIP
   # clusterIP: 10.43.4.77
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 8888
   targetPort: 8888
+  protocol: TCP
+
+telemetryService:
+  name: telemetry-service
+  type: ClusterIP
+  port: 4242
+  targetPort: 4242
   protocol: TCP
 
 
@@ -252,11 +263,11 @@ ingress:
     - host: vivid-yak.gw.hou1.aicloud.hpe.com
       paths:
         - name: backend-pods-service
-          path: /
+          path: /jupyter
           pathType: ImplementationSpecific
-        # - name: grafana
-        #   path: /telemetry/
-        #   pathType: ImplementationSpecific
+        - name: grafana
+          path: /telemetry/
+          pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -264,5 +275,5 @@ ingress:
 
 # For Jupyter notebooks. Set to true when using jupyter.
 jupyter:
-  enabled: true
+  enabled: false
   token: ""

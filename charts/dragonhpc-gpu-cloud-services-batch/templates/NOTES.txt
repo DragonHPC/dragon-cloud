@@ -6,14 +6,15 @@ It will be printed right after the helm install command.
 {{- if .Values.ingress.hosts }}
     {{- $getHost := index .Values.ingress.hosts 0 }}
     Here is the url for accessing Jupyter: {{ $getHost.host }}
-{{- else }}
-
 {{- end }}
 
-{{- $secret := lookup "v1" "Secret" .Release.Namespace (print (include "dragon.secretName" .) "-jupyter-token") }}
-{{- if $secret }}
-Your Jupyter token is: {{ index $secret.data "jupyter_token" | b64dec }}
-{{- else }}
-Token secret not found.
+{{/*
+If this is the first time the user installs the chart, then go ahead and print the instructions about the Jupyter token generation.
+Otherwise, as long as the user uses the same Release name, they can use the already stored Secret.
+*/}}
+{{- $secret := lookup "v1" "Secret" .Release.Namespace (print (include "dragon.jupyterSecretName" .)) }}
+{{- if not $secret }}
+You've just deployed a Dragon + Jupyter cluster. In order to access Jupyter Notebook securely, please generate a random access token and write into the "{{ include "dragon.jupyterSecretName" . }}" secret at key "jupyter_token", by running the following command:
+    python -c "import secrets; print(secrets.token_hex(16))" | kubectl create secret generic {{ include "dragon.jupyterSecretName" . }} --from-file=jupyter_token=/dev/stdin
 {{- end }}
 {{- end }}

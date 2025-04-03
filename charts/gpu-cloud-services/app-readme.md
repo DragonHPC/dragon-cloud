@@ -1,6 +1,9 @@
 <img src="https://dragonhpc.org/wp-content/uploads/2025/03/Color-logo-no-background.png" width="600">
 
-DragonHPC is a composable and distributed runtime that enables users to create scalable, complex, and resilient HPC and AI applications, workflows, and services through standard Python interfaces. Dragon provides capabilities to address many of the challenges around programmability, memory management, transparency, and efficiency on distributed computing systems.
+The GPU Cloud Services Batch is a composable and distributed runtime that enables users to
+
+
+create scalable, complex, and resilient HPC and AI applications, workflows, and services through standard Python interfaces. Dragon provides capabilities to address many of the challenges around programmability, memory management, transparency, and efficiency on distributed computing systems.
 
 # Post-Installation Steps
 
@@ -26,13 +29,22 @@ Note: The creation and management of the juypter token kubernetes secret is a ma
    ```
    set APP_NAME= value
    set JUYPTER_TOKEN= value
-   kubectl create secret generic dragon-$APP_NAME-jupyter-token \
+   kubectl create secret generic gpu-cloud-services-$APP_NAME-jupyter-token \
     --from-literal=jupyter_token=$JUYPTER_TOKEN
    ```
+2. Once the kubernetes secret has been created, the Dragon backend pods will
 
 ## Configure access to Dragon Telemetry / Graphana
 
 TBD
+
+# Open Juypter Notebook and Graphana
+
+## Steps
+
+# Run Batch Workload
+
+# Steps
 
 # Post-Uninstallation Steps
 
@@ -51,9 +63,10 @@ that share a common Juypter notebook.
 1. Using `kubectl`, delete the previously created secret.
 
    ```
-   set APP_NAME= value
-   kubectl delete secret dragon-$APP_NAME-jupyter-token
+   export set APP_NAME= value
+   kubectl delete secret gpu-cloud-services-$APP_NAME-jupyter-token
    ```
+
 ## Remove access to Dragon Telemetry / Graphana
 
 TBD

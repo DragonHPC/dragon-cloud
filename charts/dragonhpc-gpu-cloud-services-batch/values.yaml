@@ -43,9 +43,9 @@ frontend:
       # cd helm-test;
       apt-get update;
       . hack/setup;
-      # dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
+      dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
       # dragon -l actor_file=DEBUG -t hsta examples/multiprocessing/p2p_lat.py --dragon;
-      dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+      # dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
 
   env: {}
 
@@ -275,5 +275,5 @@ ingress:
 
 # For Jupyter notebooks. Set to true when using jupyter.
 jupyter:
-  enabled: false
+  enabled: true
   token: ""

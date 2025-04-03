@@ -160,10 +160,12 @@ backend:
       ulimit -l;
       ulimit -l unlimited;
       ulimit -l;
-      export PYTHONPATH="/dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/services-batch/src:$PYTHONPATH";
+      echo $PYTHONPATH;
       dragon-backend;
 
-  env: {}
+  env:
+    - name: PYTHONPATH
+      value: /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/services-batch/src
 
   ports:
     - containerPort: 8081

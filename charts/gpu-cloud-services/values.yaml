@@ -160,6 +160,7 @@ backend:
       ulimit -l;
       ulimit -l unlimited;
       ulimit -l;
+      export PYTHONPATH="/dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/services-batch/src:$PYTHONPATH";
       dragon-backend;
 
   env: {}

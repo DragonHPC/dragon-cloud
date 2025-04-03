@@ -1,0 +1,8 @@
+questions:
+- variable: backend.nnodes
+  description: The number of backend Dragon compute nodes. This should be in the range of 1 to n-1, where n is the total worker nodes in your Kubernetes cluster.
+  type: int
+  required: true
+  label: Num Compute nodes
+  group: "Backend"
+  min: 1

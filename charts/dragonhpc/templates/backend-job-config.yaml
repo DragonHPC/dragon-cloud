@@ -1,0 +1,173 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dragon.fullname" . }}-backend
+  labels:
+    {{- include "dragon.backendLabels" . | nindent 4 }}
+data:
+  {{ printf "backend_pod_%s.yml" (include "dragon.frontendAppLabel" .) | quote }}: |
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: {{ include "dragon.fullname" . }}-backend
+      {{- with .Values.backend.jobAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "dragon.backendLabels" . | nindent 8 }}
+        {{- with .Values.backend.jobLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      ownerReferences:
+      - apiVersion: batch/v1
+        controller: true
+        kind: Job
+        name: {{ include "dragon.fullname" . }}-frontend
+        uid: {{ "{{parentDeployment.metadata.uid}}" | quote }}
+    spec:
+      ttlSecondsAfterFinished: {{ .Values.backend.ttlSecondsAfterFinished }}
+      completions: {{ .Values.backend.nnodes }}
+      parallelism: {{ .Values.backend.nnodes }}
+      backoffLimit: 0  # Make sure that the pod does not restart when errored
+      template:
+        metadata:
+          {{- with .Values.backend.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            {{- include "dragon.backendLabels" . | nindent 12 }}
+            {{- with .Values.backend.podLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        spec:
+          restartPolicy: Never
+          {{- with .Values.backend.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          serviceAccountName: {{ include "dragon.backendServiceAccountName" . }}
+          {{- with .Values.backend.podSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          containers:
+            - name: backend
+              image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+              {{- with .Values.backend.command }}
+              command:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.backend.args }}
+              args:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              env:
+              {{- if .Values.jupyter.enabled }}
+                - name: K8S_JUPYTER_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "dragon.secretName" . }}-jupyter-token
+                      key: jupyter_token
+              {{- end }}
+                - name: MY_POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: MY_POD_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: MY_POD_IP
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.podIP
+                - name: POD_UID
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.uid
+                - name: BACKEND_JOB_LABEL
+                  value: {{ include "dragon.backendAppLabel" . | quote }}
+                - name: DRAGON_LOG_DEVICE_ACTOR_FILE
+                  value: "INFO"
+                - name: DRAGON_TELEMETRY_LEVEL
+                  value: {{ "{{temp_telemetry_level}}" | quote }}
+                - name: DRAGON_FE_SDESC
+                  value: {{ "{{temp_fe_sdesc}}" | quote }}
+                - name: FE_LABEL_SELECTOR
+                  value: {{ "{{temp_fe_label}}" | quote }}
+                - name: {{ "{{DRAGON_FE_GW}}" | quote }}
+                  value: {{ "{{temp_fe_gw}}" | quote }}
+                {{- with .Values.backend.env }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              {{- with .Values.backend.ports }}
+              ports:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.backend.livenessProbe }}
+              livenessProbe:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.backend.readinessProbe }}
+              readinessProbe:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.backend.resources }}
+              resources:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              {{- with .Values.backend.securityContext }}
+              securityContext:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+              volumeMounts:
+                - name: {{ .Values.sharedMemoryVolume.name }}
+                  mountPath: {{ .Values.sharedMemoryVolume.mountPath }}
+                {{- with .Values.backend.volumeMounts }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+          volumes:
+            - name: {{ .Values.sharedMemoryVolume.name }}
+              emptyDir:
+                medium: Memory
+                sizeLimit: {{ .Values.sharedMemoryVolume.sizeLimit }}
+            {{- with .Values.backend.volumes }}
+            {{- toYaml . | nindent 12 }}
+            {{- end}}
+          {{- with .Values.backend.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          affinity:
+            {{- if .Values.backend.affinity }}
+            {{- toYaml .Values.backend.affinity | nindent 12 }}
+            {{- else }}
+            podAntiAffinity:
+              # Try to keep away from the frontend pod
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchLabels:
+                        {{- include "dragon.frontendSelectorLabels" . | nindent 22 }}
+                    topologyKey: kubernetes.io/hostname
+            {{- end }}
+          topologySpreadConstraints:
+            {{- if .Values.backend.topologySpreadConstraints }}
+            {{- toYaml .Values.backend.topologySpreadConstraints | nindent 12 }}
+            {{- else }}
+            # Try to spread out backend pods
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchLabels:
+                  {{- include "dragon.backendSelectorLabels" . | nindent 18 }}
+            {{- end }}
+          {{- with .Values.backend.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

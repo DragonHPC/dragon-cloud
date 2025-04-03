@@ -1,0 +1,268 @@
+# Default values for dragon.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+
+sharedMemoryVolume:
+  name: dragonshm
+  sizeLimit: 64Gi
+  mountPath: /dev/shm
+
+
+frontend:
+  labels: {}
+
+  # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+  image:
+    repository: mkalantzi/dragondev
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  imagePullSecrets: []
+
+  command:
+    - /bin/bash
+    - "-c"
+
+  args:
+    - |
+      cd dragon-develop;
+      if [[ ! -d helm-test ]]; then
+        cp -R hpc-pe-dragon-dragon-k8s-merge-develop/ helm-test/;
+      fi
+      cd helm-test;
+      apt-get update;
+      . hack/setup;
+      dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
+      # dragon -l actor_file=DEBUG -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+      # dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+
+  env: {}
+
+  ports:
+    - containerPort: 8081
+
+  # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Automatically mount a ServiceAccount's API credentials?
+    automount: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  rbac:
+    create: true
+
+  # This is for setting Kubernetes Annotations to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  podAnnotations: {}
+
+  # This is for setting Kubernetes Labels to a Pod.
+  # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  podLabels: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+  # This is to setup the liveness and readiness probes more information can be found here:
+  # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe: {}
+  readinessProbe: {}
+
+  volumes:
+    - name: dragon-develop-volume
+      persistentVolumeClaim:
+        claimName: dragon-develop-pvc
+
+  volumeMounts:
+    - name: dragon-develop-volume
+      mountPath: /dragon-develop
+
+  nodeSelector:
+    node-role.kubernetes.io/service: "true"
+
+  affinity: {}
+
+  tolerations: {}
+    #- key: node-role.kubernetes.io/compute
+    #  operator: Exists
+    #  effect: NoExecute
+    #- key: nvidia.com/gpu.present
+    #  operator: Exists
+    #  effect: NoSchedule
+
+  jobAnnotations: {}
+  jobLabels: {}
+
+  ttlSecondsAfterFinished: 300
+
+
+
+backend:
+  labels: {}
+
+  nnodes: 2
+
+  image:
+    repository: mkalantzi/dragondev
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  imagePullSecrets: []
+
+  command:
+    - /bin/bash
+    - "-c"
+
+  args:
+    - |
+      apt-get update;
+      ucx_info -v;
+      cd dragon-develop/helm-test;
+      . hack/setup;
+      ldconfig -p | grep ucp;
+      ldd /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/src/lib/libdfabric_ucx.so;
+      ulimit -l;
+      ulimit -l unlimited;
+      ulimit -l;
+      dragon-backend;
+
+  env: {}
+
+  ports:
+    - containerPort: 8081
+
+  serviceAccount:
+    create: true
+    automount: true
+    annotations: {}
+    name: ""
+
+  rbac:
+    create: true
+
+  podAnnotations: {}
+  podLabels: {}
+  podSecurityContext: {}
+
+  securityContext:
+    allowPrivilegeEscalation: true
+    capabilities:
+      add:
+        - IPC_LOCK
+        - IPC_OWNER
+        - SYS_RESOURCE
+    privileged: true
+    readOnlyRootFilesystem: false
+    runAsNonRoot: false
+
+  resources:
+    limits:
+      nvidia.com/gpu: 2
+    requests:
+      nvidia.com/gpu: 2
+
+  livenessProbe: {}
+  readinessProbe: {}
+
+  volumes:
+    - name: dragon-develop-volume
+      persistentVolumeClaim:
+        claimName: dragon-develop-pvc
+
+  volumeMounts:
+    - name: dragon-develop-volume
+      mountPath: /dragon-develop
+
+  nodeSelector:
+    node-role.kubernetes.io/compute: "true"
+
+  affinity: {}
+
+  topologySpreadConstraints: {}
+
+  tolerations:
+    - key: node-role.kubernetes.io/compute
+      operator: Exists
+      effect: NoExecute
+    - key: nvidia.com/gpu.present
+      operator: Exists
+      effect: NoSchedule
+
+  jobAnnotations: {}
+  jobLabels: {}
+
+  ttlSecondsAfterFinished: 300
+
+
+
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # clusterIP: 10.43.4.77
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 8888
+  targetPort: 8888
+  protocol: TCP
+
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: vivid-yak.gw.hou1.aicloud.hpe.com
+      paths:
+        - name: backend-pods-service
+          path: /
+          pathType: ImplementationSpecific
+        # - name: grafana
+        #   path: /telemetry/
+        #   pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# For Jupyter notebooks. Set to true when using jupyter.
+jupyter:
+  enabled: true
+  token: ""

@@ -1,0 +1,19 @@
+{{/*
+Include here information that the user needs to know.
+It will be printed right after the helm install command.
+*/}}
+{{- if .Values.jupyter.enabled }}
+{{- if .Values.ingress.hosts }}
+    {{- $getHost := index .Values.ingress.hosts 0 }}
+    Here is the url for accessing Jupyter: {{ $getHost.host }}
+{{- else }}
+
+{{- end }}
+
+{{- $secret := lookup "v1" "Secret" .Release.Namespace (print (include "dragon.secretName" .) "-jupyter-token") }}
+{{- if $secret }}
+Your Jupyter token is: {{ index $secret.data "jupyter_token" | b64dec }}
+{{- else }}
+Token secret not found.
+{{- end }}
+{{- end }}

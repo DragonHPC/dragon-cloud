@@ -1,0 +1,50 @@
+annotations:
+  catalog.cattle.io/display-name: GPU Cloud Services Batch
+  catalog.cattle.io/os: linux
+  catalog.cattle.io/permits-os: linux
+apiVersion: v2
+appVersion: 0.12.0
+description: Dragon cluster running the GPE Cloud Services Batch service
+home: http://dragonhpc.org
+icon: https://dragonhpc.org/wp-content/uploads/2025/03/Color-logo-no-background.png
+keywords:
+- Python
+- Multiprocessing
+- HPC
+maintainers:
+- email: burke@hpe.com
+  name: Michael Burke
+- email: yian.chen@hpe.com
+  name: Yian Chen
+- email: eric.cozzi@hpe.com
+  name: Eric Cozzi
+- email: zachary.crisler@hpe.com
+  name: Zach Crisler
+- email: julius.donnert@hpe.com
+  name: Julius Donnert
+- email: veena.venkata.ghorakavi@hpe.com
+  name: Veena Ghorakavi
+- email: mohammad.hadi@hpe.com
+  name: Faisal Hadi
+- email: nicholas.hill@hpe.com
+  name: Nick Hill
+- email: maria.kalantzi@hpe.com
+  name: Maria Kalantzi
+- email: kent.lee@hpe.com
+  name: Kent Lee
+- email: pete.mendygral@hpe.com
+  name: Pete Mendygral
+- email: indira.pimpalkhare@hpe.com
+  name: Indira Pimpalkhare
+- email: davin.potts@hpe.com
+  name: Davin Potts
+- email: nick.radcliffe@hpe.com
+  name: Nick Radcliffe
+- email: colin.wahl@hpe.com
+  name: Colin Wahl
+name: dragonhpc-gpu-cloud-services-batch
+sources:
+- https://github.com/DragonHPC/dragon
+- https://developer.hpe.com/platform/dragonhpc/home/
+type: application
+version: 0.1.0

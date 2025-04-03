@@ -1,0 +1,32 @@
+{{- if .Values.backend.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "dragon.fullname" . }}-backend
+  labels:
+    {{- include "dragon.backendLabels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "dragon.fullname" . }}-backend
+  labels:
+    {{- include "dragon.backendLabels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "dragon.fullname" . }}-backend
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "dragon.backendServiceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

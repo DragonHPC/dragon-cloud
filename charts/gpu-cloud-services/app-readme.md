@@ -23,7 +23,7 @@ Note: The creation and management of the juypter token kubernetes secret is a ma
 1. Using `kubectl`, create a kubernetes secret containing the token value to use. The secret should be named
    `dragon-[NAME]-juypter-token`, where `[NAME]` is the name used when installing this DragonHPC application.
 
-   ```bash
+   ```
    # set RELEASE_NAME=<RELEASE_NAME>
    # kubectl create secret generic dragon-$RELEASE_NAME-jupyter-token \
     --from-literal=username=admin
@@ -49,8 +49,8 @@ that share a common Juypter notebook.
 
 1. Using `kubectl`, delete the previously created secret.
 
-   ```bash
-   # set RELEASE_NAME=<RELEASE_NAME>
+   ```
+   # set RELEASE_NAME=[RELEASE_NAME]
    # kubectl delete secret dragon-$RELEASE_NAME-jupyter-token
    ```
 ## Remove access to Dragon Telemetry / Graphana

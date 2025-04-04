@@ -2,6 +2,7 @@ annotations:
   catalog.cattle.io/display-name: GPU Cloud Services Batch
   catalog.cattle.io/os: linux
   catalog.cattle.io/permits-os: linux
+  catalog.cattle.io/featured: "1"
 apiVersion: v2
 appVersion: 0.12.0
 description: Dragon cluster running the GPU Cloud Services Batch service

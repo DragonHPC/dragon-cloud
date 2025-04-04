@@ -34,8 +34,8 @@ application will not fully start until an appropriately named secret has been cr
    `gpu-cloud-services-[NAME]-jupyter-token`, where `[NAME]` is the name used when installing this DragonHPC application.
 
    ```
-   set APP_NAME= name_value
-   set JUPYTER_TOKEN = token_value
+   export APP_NAME= name_value
+   export JUPYTER_TOKEN = token_value
    kubectl create secret generic gpu-cloud-services-$APP_NAME-jupyter-token \
     --from-literal=jupyter_token=$JUPYTER_TOKEN
    ```
@@ -170,7 +170,7 @@ that share a common Juypter notebook.
 1. Using `kubectl`, delete the previously created secret.
 
    ```
-   export set APP_NAME= value
+   export APP_NAME= value
    kubectl delete secret gpu-cloud-services-$APP_NAME-jupyter-token
    ```
 # Links

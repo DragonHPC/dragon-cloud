@@ -177,3 +177,4 @@ that share a common Juypter notebook.
 
 [dragonhpc.org](http://dragonhpc.org/)
 [dragonhpc.slack.com](https://dragonhpc.slack.com/)
+[Batch API Documentation](https://curly-bassoon-qzp7w5j.pages.github.io/guides/user/services/dragon_batch/)

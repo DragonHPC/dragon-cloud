@@ -94,6 +94,8 @@ data:
                   value: {{ include "dragon.backendAppLabel" . | quote }}
                 - name: DRAGON_LOG_DEVICE_ACTOR_FILE
                   value: "INFO"
+                - name: PYTHONPATH
+                  value: "/dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/services-batch/src"
                 - name: DRAGON_TELEMETRY_LEVEL
                   value: {{ "{{temp_telemetry_level}}" | quote }}
                 - name: DRAGON_FE_SDESC

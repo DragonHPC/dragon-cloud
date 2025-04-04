@@ -163,9 +163,7 @@ backend:
       echo $PYTHONPATH;
       dragon-backend;
 
-  env:
-    - name: PYTHONPATH
-      value: /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/services-batch/src
+  env: {}
 
   ports:
     - containerPort: 8081

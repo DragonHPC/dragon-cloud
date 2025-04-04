@@ -160,7 +160,7 @@ backend:
       ulimit -l;
       ulimit -l unlimited;
       ulimit -l;
-      echo $PYTHONPATH;
+      # echo $PYTHONPATH;
       dragon-backend;
 
   env: {}

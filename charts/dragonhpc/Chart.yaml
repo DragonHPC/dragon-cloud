@@ -2,6 +2,7 @@ annotations:
   catalog.cattle.io/display-name: DragonHPC
   catalog.cattle.io/os: linux
   catalog.cattle.io/permits-os: linux
+  catalog.cattle.io/hidden: "true"
 apiVersion: v2
 appVersion: 0.12.0
 description: Dragon cluster running a Jupyter notebook.

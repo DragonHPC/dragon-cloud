@@ -32,17 +32,16 @@ frontend:
 
   workingDir: examples/jupyter
 
+  batchName: batch
+
   command:
     - /bin/bash
     - "-c"
 
   args:
     - |
-      python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
-      # dragon -l DEBUG -t hsta p2p_lat.py --dragon;
-      # dragon -t hsta p2p_lat.py --dragon;
+      python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include" && \
       dragon -t hsta --telemetry-level=3 start_jupyter.py
-      # dragon -t hsta gups_ddict.py --nclients=256 --managers_per_node=8 --num_nodes=4 --total_mem_size=512 --mem_frac=0.6 --iterations=10 --value_size_min=16777216 --value_size_max=67108864
 
   env: {}
 

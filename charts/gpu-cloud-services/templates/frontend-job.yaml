@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "dragon.frontendAppLabel" . }}
-  # name: {{ include "dragon.fullname" . }}-frontend
   {{- with .Values.frontend.jobAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -39,11 +38,18 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: init-create-dir
+          image: busybox
+          command: ["sh", "-c", "mkdir -p {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }} && cp {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/start_jupyter.py {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }}/start_jupyter.py"]
+          volumeMounts:
+            - name: {{ (index .Values.frontend.volumeMounts 0).name }}
+              mountPath: {{ (index .Values.frontend.volumeMounts 0).mountPath }}
       containers:
         - name: frontend
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
-          workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}
+          workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }}
           {{- with .Values.frontend.command }}
           command:
             {{- toYaml . | nindent 12 }}

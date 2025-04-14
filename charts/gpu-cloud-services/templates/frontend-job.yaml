@@ -41,7 +41,7 @@ spec:
       initContainers:
         - name: init-create-dir
           image: busybox
-          command: ["sh", "-c", "mkdir -p {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }} && cp {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/start_jupyter.py {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }}/start_jupyter.py"]
+          command: ["sh", "-c", "mkdir -p {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }}"]
           volumeMounts:
             - name: {{ (index .Values.frontend.volumeMounts 0).name }}
               mountPath: {{ (index .Values.frontend.volumeMounts 0).mountPath }}
@@ -49,7 +49,7 @@ spec:
         - name: frontend
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
-          workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }}
+          workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}
           {{- with .Values.frontend.command }}
           command:
             {{- toYaml . | nindent 12 }}

@@ -56,7 +56,7 @@ data:
             - name: backend
               image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
               imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
-              workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }}
+              workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}
               {{- with .Values.backend.command }}
               command:
                 {{- toYaml . | nindent 16 }}
@@ -96,7 +96,7 @@ data:
                 - name: DRAGON_LOG_DEVICE_ACTOR_FILE
                   value: "INFO"
                 - name: PYTHONPATH
-                  value: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/src"
+                  value: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/services-batch/src"
                 - name: LD_LIBRARY_PATH
                   value: ""
                 - name: DRAGON_TELEMETRY_LEVEL

@@ -97,8 +97,8 @@ data:
                   value: "INFO"
                 - name: PYTHONPATH
                   value: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/services-batch/src
-                - name: LD_LIBRARY_PATH
-                  value: ""
+                # - name: LD_LIBRARY_PATH
+                #   value: ""
                 - name: DRAGON_TELEMETRY_LEVEL
                   value: {{ "{{temp_telemetry_level}}" | quote }}
                 - name: DRAGON_FE_SDESC

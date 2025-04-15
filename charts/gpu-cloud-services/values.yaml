@@ -24,8 +24,8 @@ frontend:
   image:
     repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
-    # pullPolicy: IfNotPresent
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
+    # pullPolicy: Always
 
   # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   imagePullSecrets: []
@@ -131,8 +131,8 @@ backend:
   image:
     repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
-    # pullPolicy: IfNotPresent
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
+    # pullPolicy: Always
 
   imagePullSecrets: []
 

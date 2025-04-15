@@ -96,7 +96,7 @@ data:
                 - name: DRAGON_LOG_DEVICE_ACTOR_FILE
                   value: "INFO"
                 - name: PYTHONPATH
-                  value: "{{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/services-batch/src"
+                  value: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/services-batch/src
                 - name: LD_LIBRARY_PATH
                   value: ""
                 - name: DRAGON_TELEMETRY_LEVEL

@@ -23,6 +23,7 @@ frontend:
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
     repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
+    # tag: "011"
     tag: latest
     pullPolicy: IfNotPresent
     # pullPolicy: Always
@@ -41,6 +42,7 @@ frontend:
   args:
     - |
       python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
+      # export PYTHONPATH=$PYTHONPATH:/dragon-develop/examples/jupyter/batch/services-batch/src;
       # dragon -t hsta --telemetry-level=3 start_jupyter.py;
       dragon -t hsta start_jupyter.py;
 
@@ -130,6 +132,7 @@ backend:
 
   image:
     repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
+    # tag: "011"
     tag: latest
     pullPolicy: IfNotPresent
     # pullPolicy: Always
@@ -143,6 +146,7 @@ backend:
   args:
     - |
       python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
+      # export PYTHONPATH=$PYTHONPATH:/dragon-develop/examples/jupyter/batch/services-batch/src;
       dragon-backend;
 
   env: {}

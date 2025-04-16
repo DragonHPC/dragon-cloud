@@ -42,9 +42,7 @@ frontend:
   args:
     - |
       python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
-      # export PYTHONPATH=$PYTHONPATH:/dragon-develop/examples/jupyter/batch/services-batch/src;
-      # dragon -t hsta --telemetry-level=3 start_jupyter.py;
-      dragon -t hsta start_jupyter.py;
+      dragon -t hsta --telemetry-level=3 start_jupyter.py;
 
   env: {}
 
@@ -146,7 +144,6 @@ backend:
   args:
     - |
       python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
-      # export PYTHONPATH=$PYTHONPATH:/dragon-develop/examples/jupyter/batch/services-batch/src;
       dragon-backend;
 
   env: {}
@@ -181,9 +178,9 @@ backend:
 
   resources:
     limits:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 8
     requests:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 8
 
   livenessProbe: {}
   readinessProbe: {}

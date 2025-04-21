@@ -195,7 +195,7 @@ backend:
       mountPath: /dragon-develop
 
   nodeSelector:
-    node-role.kubernetes.io/sm-v4: "true"
+    node-role.kubernetes.io/compute: "true"
 
   affinity: {}
 

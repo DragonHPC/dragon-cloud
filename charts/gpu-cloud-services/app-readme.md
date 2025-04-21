@@ -62,7 +62,7 @@ local system to communicate with these services running within your Kubernetes c
 2. Execute the following command in a different shell locally in your system to enable access to Grafana.
 
    ```
-   kubectl port-forward svc/grafana -n grafana-k8 3000:3000
+   kubectl port-forward svc/grafana -n third-party 3000:3000
    ```
 
 # Open Jupyter Notebook and Grafana

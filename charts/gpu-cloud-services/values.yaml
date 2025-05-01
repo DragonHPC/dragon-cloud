@@ -17,6 +17,9 @@ sharedMemoryVolume:
   mountPath: /dev/shm
 
 
+python:
+  packages: []
+
 frontend:
   labels: {}
 

@@ -7,5 +7,5 @@ questions:
   min: 1
 - variable: python.packages
   description: List of Python packages to be installed via pip.
-  type: listofstrings
+  type: multiline
   label: Python Packages

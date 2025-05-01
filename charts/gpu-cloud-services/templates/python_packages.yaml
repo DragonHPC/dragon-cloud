@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{ include "dragon.fullname" . }}-python-packages
 data:
-  packages: {{- range .Values.python.packages }} - {{.}} {{- end }}
+  packages: {{ toYaml .Values.python.packages | indent 2 }}

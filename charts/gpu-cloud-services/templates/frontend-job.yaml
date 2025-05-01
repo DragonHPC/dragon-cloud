@@ -103,6 +103,11 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.python.packages }}
+            - name: python-package-volume
+              mountPath: /tmp/requests.txt
+              subPath: packages
+            {{- end }}
             - name: {{ .Values.sharedMemoryVolume.name }}
               mountPath: {{ .Values.sharedMemoryVolume.mountPath }}
             - name: backend-job
@@ -111,6 +116,11 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
       volumes:
+        {{- if .Values.python.packages }}
+        - name: python-package-volume
+          configMap:
+            name: {{ include "dragon.fullname" . }}-python-packages
+        {{- end }}
         - name: {{ .Values.sharedMemoryVolume.name }}
           emptyDir:
             medium: Memory

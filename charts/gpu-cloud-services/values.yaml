@@ -18,7 +18,7 @@ sharedMemoryVolume:
 
 
 python:
-  packages: []
+  packages:
 
 frontend:
   labels: {}

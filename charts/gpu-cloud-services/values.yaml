@@ -25,8 +25,8 @@ frontend:
     repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     # tag: "011"
     tag: latest
-    # pullPolicy: IfNotPresent
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
+    # pullPolicy: Always
 
   # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   imagePullSecrets: []
@@ -42,7 +42,7 @@ frontend:
   args:
     - |
       python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
-      dragon -t hsta --telemetry-level=3 server.py;
+      dragon -l DEBUG -t hsta --telemetry-level=3 server.py;
 
   env: {}
 
@@ -132,8 +132,8 @@ backend:
     repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     # tag: "011"
     tag: latest
-    # pullPolicy: IfNotPresent
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
+    # pullPolicy: Always
 
   imagePullSecrets: []
 

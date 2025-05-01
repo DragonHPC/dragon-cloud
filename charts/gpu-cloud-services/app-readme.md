@@ -1,4 +1,4 @@
-<img src="https://dragonhpc.org/wp-content/uploads/2025/03/Color-logo-no-background.png" width="600">
+<img src="https://github.com/DragonHPC/dragon-cloud/blob/main/Color-logo-no-background.png" width="600">
 
 The GPU Cloud Service Batch service enables the running of functions, serial executables, and parallel applications that
 supports complex data dependencies and manages task failures. Users access the batch service in one of several ways, including

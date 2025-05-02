@@ -47,6 +47,5 @@ name: gpu-cloud-services
 sources:
 - https://github.com/DragonHPC/dragon
 - https://developer.hpe.com/platform/dragonhpc/home/
-- https://curly-bassoon-qzp7w5j.pages.github.io/guides/user/services/dragon_batch
 type: application
 version: 0.1.0

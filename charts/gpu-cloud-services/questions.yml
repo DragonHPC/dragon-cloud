@@ -6,6 +6,12 @@ questions:
   label: Num Compute nodes
   min: 1
 - variable: python.packages
-  description: List of Python packages to be installed via pip.
+  description: |
+    Optional list of Python packages to be installed via pip. Each pip package should be listed on its own line.
+
+    Example:
+      requests
+      pillow
+      scipy==1.9.3
   type: multiline
   label: Python Packages

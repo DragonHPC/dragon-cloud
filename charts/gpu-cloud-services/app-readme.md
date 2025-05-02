@@ -1,8 +1,17 @@
 <img src="https://github.com/DragonHPC/dragon-cloud/blob/main/Color-logo-no-background.png" width="600">
 
 The GPU Cloud Service Batch service enables the running of functions, serial executables, and parallel applications that
-supports complex data dependencies and manages task failures. Users access the batch service in one of several ways, including
-via an interactive Juypter Python notebook.
+supports complex data dependencies and manages task failures. Users access the batch service in one of several ways, including via an interactive Juypter Python notebook.
+
+# Pre-installed Python Packages
+
+The GPU Cloud Service Batch service utilizes the following python packages and sub-packages.
+
+* [DragonHPC](https://github.com/DragonHPC/dragon)
+  * [requirements.txt](https://github.com/DragonHPC/dragon/blob/7b19987e0426840db71b92bb2d612a37def3057d/.devcontainer/requirements.txt)
+* HPC Alamo Batch
+  * matplotlib (>=3.10.1,<4.0.0)
+  * networkx (>=3.4.2,<4.0.0)
 
 # Post-Installation Steps
 

@@ -1,8 +1,17 @@
 <img src="https://raw.githubusercontent.com/DragonHPC/dragon-cloud/refs/heads/main/Color-logo-no-background.png" width="600">
 
 The GPU Cloud Service Batch service enables the running of functions, serial executables, and parallel applications that
-supports complex data dependencies and manages task failures. Users access the batch service in one of several ways, including
-via an interactive Juypter Python notebook.
+supports complex data dependencies and manages task failures. Users access the batch service in one of several ways, including via an interactive Juypter Python notebook.
+
+# Pre-installed Python Packages
+
+The GPU Cloud Service Batch service utilizes the following python packages and sub-packages.
+
+* [DragonHPC](https://github.com/DragonHPC/dragon)
+  * [requirements.txt](https://github.com/DragonHPC/dragon/blob/7b19987e0426840db71b92bb2d612a37def3057d/.devcontainer/requirements.txt)
+* HPC Alamo Batch
+  * matplotlib (>=3.10.1,<4.0.0)
+  * networkx (>=3.4.2,<4.0.0)
 
 # Post-Installation Steps
 
@@ -75,83 +84,7 @@ local system to communicate with these services running within your Kubernetes c
 
 # Run Batch Workload
 
-## Getting Started
-
-The Batch service allows users to compile a sequence of calls to Python functions, executables, and parallel jobs into a single
-task that the user can start and wait on. Below is a simple example using `Batch` to create a DAG representing the parallelization
-of a list of functions.
-
-    # Generate the powers of a matrix and write them to disk
-    from alamo import Batch
-    from pathlib import Path
-    import numpy as np
-
-    # A base directory, and files in it, will be used for communication of results
-    batch = Batch()
-    base_dir = Path("/some/path/to/base_dir")
-
-    # Knowledge of reads and writes to files will also be used by the Batch service
-    # to determine data dependencies and how to parallelize tasks
-    reads = lambda i: batch.read(base_dir, Path(f"file_{i}"))
-    writes = lambda i: batch.write(base_dir, Path(f"file_{i+1}"))
-
-    a = np.array([j for j in range(100)])
-    m = np.vander(a)
-
-    # batch.function will create a task with specified arguments and reads/writes to the file system
-    get_task = lambda i: batch.function(gpu_matmul_func, (m, base_dir, i), reads(i), writes(i))
-
-    # Package up the list of tasks into a single compiled task and create the DAG (done by batch.compile),
-    # and then submit the compiled task to the Batch service (done by matrix_powers_task.start)
-    matrix_powers_task = batch.compile([get_task(i) for i in range(1000)])
-    results_dict = matrix_powers_task.start()
-
-    # Wait for the compiled task to complete
-    matrix_powers_task.wait(timeout=30)
-
-    # If there was an exception while running the task, it will be raised when get() is called
-    for result, stdout, stderr in results_dict.values():
-        try:
-            print(f"result={result.get()}")
-            # print(f"stdout={stdout.get()}")
-            # print(f"stderr={stderr.get()}")
-        except Exception as e:
-            print(f"gpu_matmul_func failed with the following exception: {e}")
-
-    batch.close()
-    batch.join()
-
-The `Batch.compile` operation assumes that the order of functions in the list represents a valid order in which a user would
-manually call the functions in a sequential program. Given the list of functions, `Batch.compile` will produce a DAG that
-contains all the information needed to efficiently parallelize the function calls. Calling `matrix_powers_task.start` will
-submit the *compiled* task to the Batch service, and calling `matrix_powers_task.wait` will wait for the completion of the task.
-The functions `Batch.close` and `Batch.join` are similar to the functions in `multiprocessing.Pool` with the same names--`Batch.close`
-lets the Batch service know that no more work will be submitted, and `Batch.join` waits for all work submitted to the Batch service
-to complete and for the service to shut down.
-
-Individual (i.e., non-compiled) tasks can also be submitted to the Batch service, but batching tasks together via `Batch.compile`
-will generally give better performance in terms of task scheduling overhead. There is no guaranteed ordering between separate tasks
-submitted to the Batch service. So, for example, if a user submits several compiled and non-compiled tasks to the Batch service,
-they will be executed in parallel and in no particular order.
-
-Any mix of Python functions, executables, and parallel jobs can be submitted to the Batch service simulataneously, and dependencies
-can exist between tasks of any type, e.g., an MPI job can depend on the completion of a Python function if the MPI job reads from
-a file that the function writes to. MPI jobs are specified using the `Batch.job` function, which will create a task that allows
-the user to run the specified job. Likewise, the `Batch.process` function creates a task for running a serial executable. All tasks,
-regardless of the type of code that they run, have the same interface: `Task.start` to start a task without waiting for its completion;
-`Task.wait` to wait for the completion of a task; `Task.run`, a blocking variant of `Task.start`, to both start a task and wait for its
-completion; and `get` is used to get the result, stdout, or stderr of a task. Calling `start` or `run` for individual tasks will return
-a tuple of three handles: `result`, `stdout`, and `stderr`, all of type `AsyncValue`. Calling the `get` method for any of these handles
-gets the associated value, and waits for the completion of the task if necessary. For compiled tasks, calling `start` or `run` will
-return a dictionary of these tuples, where the key for a tuple is the UID of its task (obtained by calling `Task.get_uid()`). If an
-exception was thrown during the execution of a task, then calling `AsyncValue.get()` for the `result`, `stdout`, or `stderr` of the
-task will raise the same exception that was thrown by the task.
-
-The initial creation of the `Batch` object sets up manager and worker processes that implement an instance of the Batch service.
-`Batch` objects can be passed between processes to allow multiple clients to use the Batch service. Unpickling a `Batch` object
-at a destination process will register the new `Batch` client with the Batch service and allow the user to submit tasks to it.
-All clients must call `Batch.close` to indicate that they are done with the Batch service. Only the primary client (which created
-the initial `Batch` object) needs to call `Batch.join`. Note that `Batch.join` will block until all clients have called `Batch.close`.
+Documentation for using the GPU Cloud Service Batch services can be found [here](https://github.com/DragonHPC/dragon-cloud).
 
 # Post-Uninstallation Steps
 
@@ -177,4 +110,3 @@ that share a common Juypter notebook.
 
 [dragonhpc.org](http://dragonhpc.org/)
 [dragonhpc.slack.com](https://dragonhpc.slack.com/)
-[Batch API Documentation](https://curly-bassoon-qzp7w5j.pages.github.io/guides/user/services/dragon_batch/)

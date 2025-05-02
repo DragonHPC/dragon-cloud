@@ -133,7 +133,7 @@ data:
               volumeMounts:
                 {{- if .Values.python.packages }}
                 - name: python-package-volume
-                  mountPath: /tmp/requests.txt
+                  mountPath: /tmp/requirements.txt
                   subPath: packages
                 {{- end }}
                 - name: {{ .Values.sharedMemoryVolume.name }}

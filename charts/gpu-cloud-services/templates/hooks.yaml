@@ -16,7 +16,8 @@ spec:
         - |
           cd {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }} && \
           # use the Backend Job name to distinguish the log files to delete
-          rm -f *{{ include "dragon.fullname" . }}-backend*.log
+          rm -f *{{ include "dragon.fullname" . }}-backend*.log && \
+          cd {{ .Release.Name }} && rm -f *{{ include "dragon.fullname" . }}-backend*.log
         volumeMounts:
         - name: dragon-develop-volume
           mountPath: /dragon-develop

@@ -13,6 +13,10 @@ The GPU Cloud Service Batch service utilizes the following python packages and s
   * matplotlib (>=3.10.1,<4.0.0)
   * networkx (>=3.4.2,<4.0.0)
 
+# Installation
+
+During installation, in the first step, you will be asked to provide a `name`. Please enter no more than 20 characters.
+
 # Post-Installation Steps
 
 After successfully installing this application, the following steps should be taken to complete post-installation requirements.
@@ -40,12 +44,12 @@ application will not fully start until an appropriately named secret has been cr
    ```
 
 2. Using `kubectl`, create a kubernetes secret containing the generated token value. The secret should be named
-   `gpu-cloud-services-[NAME]-jupyter-token`, where `[NAME]` is the name used when installing this DragonHPC application.
+   `services-[NAME]-jupyter-token`, where `[NAME]` is the name used when installing this DragonHPC application.
 
    ```
    export APP_NAME= name_value
    export JUPYTER_TOKEN = token_value
-   kubectl create secret generic gpu-cloud-services-$APP_NAME-jupyter-token \
+   kubectl create secret generic services-$APP_NAME-jupyter-token \
     --from-literal=jupyter_token=$JUPYTER_TOKEN
    ```
 
@@ -104,7 +108,7 @@ that share a common Juypter notebook.
 
    ```
    export APP_NAME= value
-   kubectl delete secret gpu-cloud-services-$APP_NAME-jupyter-token
+   kubectl delete secret services-$APP_NAME-jupyter-token
    ```
 # Links
 

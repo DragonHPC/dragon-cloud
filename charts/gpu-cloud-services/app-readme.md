@@ -3,6 +3,7 @@
 The GPU Cloud Service Batch service enables the running of functions, serial executables, and parallel applications that
 supports complex data dependencies and manages task failures. Users access the batch service in one of several ways, including via an interactive Juypter Python notebook.
 
+
 # Pre-installed Python Packages
 
 The GPU Cloud Service Batch service utilizes the following python packages and sub-packages.

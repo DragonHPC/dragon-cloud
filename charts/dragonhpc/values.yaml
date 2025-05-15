@@ -13,21 +13,27 @@ fullnameOverride: ""
 
 sharedMemoryVolume:
   name: dragonshm
-  sizeLimit: 64Gi
+  sizeLimit: 256Gi
   mountPath: /dev/shm
 
+
+python:
+  packages:
 
 frontend:
   labels: {}
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
+    repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
-    pullPolicy: IfNotPresent
+    # pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   imagePullSecrets: []
+
+  workingDir: examples
 
   command:
     - /bin/bash
@@ -35,17 +41,12 @@ frontend:
 
   args:
     - |
-      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
-      # cd dragon-develop;
-      # if [[ ! -d helm-test ]]; then
-      #   cp -R hpc-pe-dragon-dragon-k8s-merge-develop/ helm-test/;
-      # fi
-      # cd helm-test;
-      apt-get update;
-      . hack/setup;
-      # dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
-      # dragon -l actor_file=DEBUG -t hsta examples/multiprocessing/p2p_lat.py --dragon;
-      dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+      if [ -f /tmp/requirements.txt ]; then
+          python3 -m pip install -r /tmp/requirements.txt;
+      fi;
+      python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
+      # dragon -t hsta gups_ddict.py --nclients=256 --managers_per_node=8 --num_nodes=4 --total_mem_size=512 --mem_frac=0.6 --iterations=10 --value_size_min=16777216 --value_size_max=67108864;
+      dragon -t hsta gups_ddict.py --managers_per_node=8 --num_nodes=1 --nclients=32 --total_mem_size=128 --mem_frac=0.60 --value_size_max=67108864;
 
   env: {}
 
@@ -118,12 +119,6 @@ frontend:
   affinity: {}
 
   tolerations: {}
-    #- key: node-role.kubernetes.io/compute
-    #  operator: Exists
-    #  effect: NoExecute
-    #- key: nvidia.com/gpu.present
-    #  operator: Exists
-    #  effect: NoSchedule
 
   jobAnnotations: {}
   jobLabels: {}
@@ -138,9 +133,10 @@ backend:
   nnodes: 2
 
   image:
-    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
+    repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
-    pullPolicy: IfNotPresent
+    # pullPolicy: IfNotPresent
+    pullPolicy: Always
 
   imagePullSecrets: []
 
@@ -150,16 +146,10 @@ backend:
 
   args:
     - |
-      apt-get update;
-      ucx_info -v;
-      # cd dragon-develop/helm-test;
-      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
-      . hack/setup;
-      ldconfig -p | grep ucp;
-      ldd /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/src/lib/libdfabric_ucx.so;
-      ulimit -l;
-      ulimit -l unlimited;
-      ulimit -l;
+      if [ -f /tmp/requirements.txt ]; then
+          python3 -m pip install -r /tmp/requirements.txt;
+      fi;
+      python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
       dragon-backend;
 
   env: {}
@@ -194,9 +184,9 @@ backend:
 
   resources:
     limits:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 8
     requests:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 8
 
   livenessProbe: {}
   readinessProbe: {}
@@ -230,9 +220,6 @@ backend:
 
   ttlSecondsAfterFinished: 300
 
-
-
-
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 jupyterService:
   name: backend-pods-service
@@ -250,28 +237,6 @@ telemetryService:
   port: 4242
   targetPort: 4242
   protocol: TCP
-
-
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
-  enabled: true
-  className: "nginx"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: vivid-yak.gw.hou1.aicloud.hpe.com
-      paths:
-        - name: backend-pods-service
-          path: /jupyter
-          pathType: ImplementationSpecific
-        - name: grafana
-          path: /telemetry/
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
 
 # For Jupyter notebooks. Set to true when using jupyter.
 jupyter:

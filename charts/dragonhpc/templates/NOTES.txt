@@ -3,11 +3,6 @@ Include here information that the user needs to know.
 It will be printed right after the helm install command.
 */}}
 {{- if .Values.jupyter.enabled }}
-{{- if .Values.ingress.hosts }}
-    {{- $getHost := index .Values.ingress.hosts 0 }}
-    Here is the url for accessing Jupyter: {{ $getHost.host }}
-{{- end }}
-
 {{/*
 If this is the first time the user installs the chart, then go ahead and print the instructions about the Jupyter token generation.
 Otherwise, as long as the user uses the same Release name, they can use the already stored Secret.

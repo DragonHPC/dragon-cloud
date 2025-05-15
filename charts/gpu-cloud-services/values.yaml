@@ -252,28 +252,6 @@ telemetryService:
   targetPort: 4242
   protocol: TCP
 
-
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
-  enabled: false
-  className: "nginx"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: vivid-yak.gw.hou1.aicloud.hpe.com
-      paths:
-        - name: backend-pods-service
-          path: /jupyter
-          pathType: ImplementationSpecific
-        - name: grafana
-          path: /telemetry/
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
 # For Jupyter notebooks. Set to true when using jupyter.
 jupyter:
   enabled: true

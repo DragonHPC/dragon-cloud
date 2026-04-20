@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.jupyterService.name }}
+  name: {{ printf "%s-%s" .Release.Name .Values.jupyterService.name }}
 spec:
-  type: {{ .Values.jupyterService.type }}
+  clusterIP: None
   ports:
     - port: {{ .Values.jupyterService.port }}
       targetPort: {{ .Values.jupyterService.targetPort }}
@@ -14,7 +14,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.telemetryService.name }}
+  name: {{ printf "%s-%s" .Release.Name .Values.telemetryService.name }}
 spec:
   type: {{ .Values.telemetryService.type }}
   ports:

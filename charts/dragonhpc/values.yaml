@@ -233,24 +233,12 @@ backend:
 
   ttlSecondsAfterFinished: 300
 
-jupyterService:
-  name: jupyter
-  port: 8080
-  targetPort: 8080
-  protocol: TCP
-
 telemetryService:
   name: telemetry
   type: ClusterIP
   port: 4242
   targetPort: 4242
   protocol: TCP
-
-# For Jupyter notebooks. Set to true when using jupyter.
-# this is part of launching a notebook prior to the api server
-jupyter:
-  enabled: false
-  token: ""
 
 # The domain name of the endpoint used for the gateway.
 domain:

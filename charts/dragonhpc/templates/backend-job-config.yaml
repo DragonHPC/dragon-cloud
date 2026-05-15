@@ -72,13 +72,6 @@ data:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
               env:
-              {{- if .Values.jupyter.enabled }}
-                - name: K8S_JUPYTER_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ include "dragon.jupyterSecretName" . }}
-                      key: jupyter_token
-              {{- end }}
                 - name: BACKEND_OVERLAY_PORT
                   value: "8081"
                 - name: POD_NAME

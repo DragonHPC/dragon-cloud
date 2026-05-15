@@ -98,6 +98,8 @@ data:
                   value: {{ join ":" .Values.pythonPaths }}
                 - name: DRAGON_TELEMETRY_LEVEL
                   value: {{ "{{temp_telemetry_level}}" | quote }}
+                - name: DRAGON_OVERLAY_TRANSPORT
+                  value: {{ "{{temp_overlay_transport}}" | quote }}
                 - name: DRAGON_FE_SDESC
                   value: {{ "{{temp_fe_sdesc}}" | quote }}
                 - name: FE_LABEL_SELECTOR

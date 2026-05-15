@@ -13,30 +13,21 @@ fullnameOverride: ""
 
 sharedMemoryVolume:
   name: dragonshm
-  sizeLimit: 256Gi
+  sizeLimit: 64Gi
   mountPath: /dev/shm
 
-
-python:
-  packages:
 
 frontend:
   labels: {}
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
-    # tag: "011"
+    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
-    # pullPolicy: IfNotPresent
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   imagePullSecrets: []
-
-  workingDir: examples/jupyter
-
-  batchName: batch
 
   command:
     - /bin/bash
@@ -44,11 +35,17 @@ frontend:
 
   args:
     - |
-      if [ -f /tmp/requirements.txt ]; then
-          python3 -m pip install -r /tmp/requirements.txt;
-      fi;
-      python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
-      dragon -t hsta --telemetry-level=3 server.py;
+      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
+      # cd dragon-develop;
+      # if [[ ! -d helm-test ]]; then
+      #   cp -R hpc-pe-dragon-dragon-k8s-merge-develop/ helm-test/;
+      # fi
+      # cd helm-test;
+      apt-get update;
+      . hack/setup;
+      dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
+      # dragon -l actor_file=DEBUG -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+      # dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
 
   env: {}
 
@@ -121,6 +118,12 @@ frontend:
   affinity: {}
 
   tolerations: {}
+    #- key: node-role.kubernetes.io/compute
+    #  operator: Exists
+    #  effect: NoExecute
+    #- key: nvidia.com/gpu.present
+    #  operator: Exists
+    #  effect: NoSchedule
 
   jobAnnotations: {}
   jobLabels: {}
@@ -135,11 +138,9 @@ backend:
   nnodes: 2
 
   image:
-    repository: harbor.greennitrogen.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
-    # tag: "011"
+    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
     tag: latest
-    # pullPolicy: IfNotPresent
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 
   imagePullSecrets: []
 
@@ -149,10 +150,17 @@ backend:
 
   args:
     - |
-      if [ -f /tmp/requirements.txt ]; then
-          python3 -m pip install -r /tmp/requirements.txt;
-      fi;
-      python3 -m dragon.cli dragon-config -a "ucx-build-lib=/usr/lib/x86_64-linux-gnu/:ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/:ucx-include=/usr/include";
+      apt-get update;
+      ucx_info -v;
+      # cd dragon-develop/helm-test;
+      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
+      . hack/setup;
+      ldconfig -p | grep ucp;
+      ldd /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/src/lib/libdfabric_ucx.so;
+      ulimit -l;
+      ulimit -l unlimited;
+      ulimit -l;
+      # echo $PYTHONPATH;
       dragon-backend;
 
   env: {}
@@ -187,9 +195,9 @@ backend:
 
   resources:
     limits:
-      nvidia.com/gpu: 8
+      nvidia.com/gpu: 2
     requests:
-      nvidia.com/gpu: 8
+      nvidia.com/gpu: 2
 
   livenessProbe: {}
   readinessProbe: {}
@@ -222,6 +230,9 @@ backend:
   jobLabels: {}
 
   ttlSecondsAfterFinished: 300
+
+
+
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 jupyterService:

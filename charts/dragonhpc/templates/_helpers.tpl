@@ -106,20 +106,6 @@ app.kubernetes.io/component: dragon-backend
 {{- end }}
 {{- end }}
 
-{{- define "dragon.serviceSelector" -}}
-{{- printf "%s_pod_0" (include "dragon.backendAppLabel" .) }}
-{{- end }}
-
 {{- define "dragon.telemetryServiceSelector" -}}
 {{- printf "%s_aggregator" (include "dragon.backendAppLabel" .) }}
 {{- end }}
-
-{{- define "dragon.jupyterSecretName" -}}
-{{- printf "%s-%s-jupyter-token" (include "dragon.name" .) .Release.Name }}
-{{- end }}
-
-{{- /*
-{{- define "dragon.jupyter.token" -}}
-{{- default (randAlphaNum 32) .Values.jupyter.token }}
-{{- end }}
-*/ -}}

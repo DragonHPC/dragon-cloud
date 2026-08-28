@@ -5,29 +5,35 @@
 # This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
 
-
 # This is to override the chart name.
 nameOverride: ""
 fullnameOverride: ""
 
-
 sharedMemoryVolume:
   name: dragonshm
-  sizeLimit: 64Gi
+  sizeLimit: 256Gi
   mountPath: /dev/shm
 
+python:
+  packages:
+
+pythonPaths:
+  - "/inference-service/inference-with-mcp"
 
 frontend:
   labels: {}
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
-    tag: latest
-    pullPolicy: IfNotPresent
+    repository: <your-repository-here>
+    tag: <your-tag-here>
+    pullPolicy: Always
 
   # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   imagePullSecrets: []
+
+  workingDir:
+  batchName:
 
   command:
     - /bin/bash
@@ -35,17 +41,13 @@ frontend:
 
   args:
     - |
-      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
-      # cd dragon-develop;
-      # if [[ ! -d helm-test ]]; then
-      #   cp -R hpc-pe-dragon-dragon-k8s-merge-develop/ helm-test/;
-      # fi
-      # cd helm-test;
-      apt-get update;
-      . hack/setup;
-      # dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
-      # dragon -l actor_file=DEBUG -t hsta examples/multiprocessing/p2p_lat.py --dragon;
-      dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+      # which python3;
+      # which dragon;
+      if [ -f /tmp/requirements.txt ]; then
+          python3 -m pip install -r /tmp/requirements.txt;
+      fi;
+      # python3 -m dragon.cli dragon-config add --ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/ --ucx-include=/usr/include --ucx-build-lib=/usr/lib/x86_64-linux-gnu/;
+      dragon --telemetry-level=3 /inference-service/inference-with-mcp/tests/performance_tests/dragon/dragon_performance.py --config_file /inference-service/inference-with-mcp/config_llama_8B.yaml --model_size small --run_type b --num_prompts 2000 --output_dir /inference-service/benchmarks_results/;
 
   env: {}
 
@@ -107,23 +109,25 @@ frontend:
     - name: dragon-develop-volume
       persistentVolumeClaim:
         claimName: dragon-develop-pvc
+    - name: inference-service-volume
+      persistentVolumeClaim:
+        claimName: inference-service
 
+  # we assume that volumeMount[0] is the shared filesystem where we host dragon required code such as Batch and the API server
+  # and volumeMount[1], when defined, is the user's distinct shared filesystem; unique for each user group
   volumeMounts:
     - name: dragon-develop-volume
       mountPath: /dragon-develop
+    - name: inference-service-volume
+      mountPath: /inference-service
 
   nodeSelector:
     node-role.kubernetes.io/service: "true"
+    kubernetes.io/hostname: worker-02
 
   affinity: {}
 
   tolerations: {}
-    #- key: node-role.kubernetes.io/compute
-    #  operator: Exists
-    #  effect: NoExecute
-    #- key: nvidia.com/gpu.present
-    #  operator: Exists
-    #  effect: NoSchedule
 
   jobAnnotations: {}
   jobLabels: {}
@@ -135,12 +139,12 @@ frontend:
 backend:
   labels: {}
 
-  nnodes: 2
+  nnodes: 1
 
   image:
-    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
-    tag: latest
-    pullPolicy: IfNotPresent
+    repository: <your-repository-here>
+    tag: <your-tag-here>
+    pullPolicy: Always
 
   imagePullSecrets: []
 
@@ -150,16 +154,10 @@ backend:
 
   args:
     - |
-      apt-get update;
-      ucx_info -v;
-      # cd dragon-develop/helm-test;
-      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
-      . hack/setup;
-      ldconfig -p | grep ucp;
-      ldd /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/src/lib/libdfabric_ucx.so;
-      ulimit -l;
-      ulimit -l unlimited;
-      ulimit -l;
+      if [ -f /tmp/requirements.txt ]; then
+          python3 -m pip install -r /tmp/requirements.txt;
+      fi;
+      # python3 -m dragon.cli dragon-config add --ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/ --ucx-include=/usr/include --ucx-build-lib=/usr/lib/x86_64-linux-gnu/;
       dragon-backend;
 
   env: {}
@@ -194,9 +192,9 @@ backend:
 
   resources:
     limits:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 4
     requests:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 4
 
   livenessProbe: {}
   readinessProbe: {}
@@ -205,10 +203,15 @@ backend:
     - name: dragon-develop-volume
       persistentVolumeClaim:
         claimName: dragon-develop-pvc
+    - name: inference-service-volume
+      persistentVolumeClaim:
+        claimName: inference-service
 
   volumeMounts:
     - name: dragon-develop-volume
       mountPath: /dragon-develop
+    - name: inference-service-volume
+      mountPath: /inference-service
 
   nodeSelector:
     node-role.kubernetes.io/compute: "true"
@@ -230,28 +233,13 @@ backend:
 
   ttlSecondsAfterFinished: 300
 
-
-
-
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-jupyterService:
-  name: backend-pods-service
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # clusterIP: 10.43.4.77
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 8888
-  targetPort: 8888
-  protocol: TCP
-
 telemetryService:
-  name: telemetry-service
+  name: telemetry
   type: ClusterIP
   port: 4242
   targetPort: 4242
   protocol: TCP
 
-# For Jupyter notebooks. Set to true when using jupyter.
-jupyter:
-  enabled: false
-  token: ""
+# The domain name of the endpoint used for the gateway.
+domain:
+  name:

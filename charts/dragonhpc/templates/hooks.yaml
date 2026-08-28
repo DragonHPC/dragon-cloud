@@ -14,15 +14,26 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
         - |
-          cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop && \
+          {{- if .Values.frontend.workingDir }}
+          cd {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }} && \
           # use the Backend Job name to distinguish the log files to delete
-          rm -f *{{ include "dragon.fullname" . }}-backend*.log
+          rm -f *{{ include "dragon.fullname" . }}*.log && rm -f {{ .Release.Name }}_dragon_gunicorn_error.log && rm -f *gunicorn*{{ .Release.Name }}*.log && rm -f {{ .Release.Name }}_dragon*.log && \
+          cd {{ .Release.Name }} && rm -f *.log
+          {{- else }}
+          {{- if gt (len .Values.frontend.volumeMounts) 1 }}
+          cd {{ (index .Values.frontend.volumeMounts 1).mountPath }} && \
+          # use the Backend Job name to distinguish the log files to delete
+          rm -f *{{ include "dragon.fullname" . }}*.log && rm -f {{ .Release.Name }}_dragon_gunicorn_error.log && rm -f *gunicorn*{{ .Release.Name }}*.log && rm -f {{ .Release.Name }}_dragon*.log && \
+          cd {{ .Release.Name }} && rm -f *.log
+          {{- end }}
+          {{- end }}
         volumeMounts:
-        - name: dragon-develop-volume
-          mountPath: /dragon-develop
+          {{- with .Values.frontend.volumeMounts }}
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
-      - name: dragon-develop-volume
-        persistentVolumeClaim:
-          claimName: dragon-develop-pvc
+        {{- with .Values.frontend.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end}}
       restartPolicy: Never
   backoffLimit: 0

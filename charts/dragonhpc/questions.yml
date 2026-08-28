@@ -4,5 +4,9 @@ questions:
   type: int
   required: true
   label: Num Compute nodes
-  group: "Backend"
   min: 1
+- variable: python.packages
+  description: |
+    Optional list of Python packages to be installed via pip. Each pip package should be listed on its own line.
+  type: multiline
+  label: Python Packages

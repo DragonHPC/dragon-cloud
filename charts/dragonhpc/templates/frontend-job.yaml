@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ include "dragon.frontendAppLabel" . }}
-  # name: {{ include "dragon.fullname" . }}-frontend
   {{- with .Values.frontend.jobAnnotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -39,10 +38,31 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: init-create-dir
+          image: busybox
+          {{- if .Values.frontend.workingDir }}
+          command: ["sh", "-c", "mkdir -p {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}/{{ .Release.Name }}"]
+          {{- else }}
+          {{- if gt (len .Values.frontend.volumeMounts) 1 }}
+          command: ["sh", "-c", "mkdir -p {{ (index .Values.frontend.volumeMounts 1).mountPath }}/{{ .Release.Name }}"]
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            {{- with .Values.frontend.volumeMounts }}
+            {{- toYaml . | nindent 16 }}
+            {{- end }}
       containers:
         - name: frontend
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          {{- if .Values.frontend.workingDir }}
+          workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}
+          {{- else }}
+          {{- if gt (len .Values.frontend.volumeMounts) 1 }}
+          workingDir: {{ (index .Values.frontend.volumeMounts 1).mountPath }}
+          {{- end }}
+          {{- end }}
           {{- with .Values.frontend.command }}
           command:
             {{- toYaml . | nindent 12 }}
@@ -72,6 +92,12 @@ spec:
                   fieldPath: metadata.uid
             - name: FRONTEND_JOB_LABEL
               value: {{ include "dragon.frontendAppLabel" . | quote }}
+            - name: PYTHONPATH
+              value: {{ join ":" .Values.pythonPaths }}
+            - name: RELEASE_NAME
+              value: "{{ .Release.Name }}"
+            - name: DOMAIN_NAME
+              value: {{ .Values.domain.name }}
             {{- with .Values.frontend.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -96,6 +122,11 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.python.packages }}
+            - name: python-package-volume
+              mountPath: /tmp/requirements.txt
+              subPath: packages
+            {{- end }}
             - name: {{ .Values.sharedMemoryVolume.name }}
               mountPath: {{ .Values.sharedMemoryVolume.mountPath }}
             - name: backend-job
@@ -104,6 +135,11 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
       volumes:
+        {{- if .Values.python.packages }}
+        - name: python-package-volume
+          configMap:
+            name: {{ include "dragon.fullname" . }}-python-packages
+        {{- end }}
         - name: {{ .Values.sharedMemoryVolume.name }}
           emptyDir:
             medium: Memory

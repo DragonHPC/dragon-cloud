@@ -22,12 +22,14 @@ frontend:
 
   # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
   image:
-    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
-    tag: latest
+    repository: <your-repository-here>
+    tag: <your-tag-here>
     pullPolicy: IfNotPresent
 
   # This is for the secretes for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   imagePullSecrets: []
+
+  workingDir:
 
   command:
     - /bin/bash
@@ -35,17 +37,10 @@ frontend:
 
   args:
     - |
-      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
-      # cd dragon-develop;
-      # if [[ ! -d helm-test ]]; then
-      #   cp -R hpc-pe-dragon-dragon-k8s-merge-develop/ helm-test/;
-      # fi
-      # cd helm-test;
-      apt-get update;
-      . hack/setup;
-      dragon -t hsta --telemetry-level=3 examples/jupyter/start_jupyter.py;
-      # dragon -l actor_file=DEBUG -t hsta examples/multiprocessing/p2p_lat.py --dragon;
-      # dragon -t hsta examples/multiprocessing/p2p_lat.py --dragon;
+      # Install Jupyter if not already installed
+      # pip install jupyter;
+      python3 -m dragon.cli dragon-config add --ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/ --ucx-include=/usr/include --ucx-build-lib=/usr/lib/x86_64-linux-gnu/;
+      dragon-jupyter;
 
   env: {}
 
@@ -114,6 +109,7 @@ frontend:
 
   nodeSelector:
     node-role.kubernetes.io/service: "true"
+    kubernetes.io/hostname: worker-01
 
   affinity: {}
 
@@ -138,8 +134,8 @@ backend:
   nnodes: 2
 
   image:
-    repository: harbor.hou1.breckenridge.cloud/us-docker.pkg.dev/clean-silo-405421/dragon-sandbox/dragondev
-    tag: latest
+    repository: <your-repository-here>
+    tag: <your-tag-here>
     pullPolicy: IfNotPresent
 
   imagePullSecrets: []
@@ -150,17 +146,9 @@ backend:
 
   args:
     - |
-      apt-get update;
-      ucx_info -v;
-      # cd dragon-develop/helm-test;
-      cd dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop;
-      . hack/setup;
-      ldconfig -p | grep ucp;
-      ldd /dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/src/lib/libdfabric_ucx.so;
-      ulimit -l;
-      ulimit -l unlimited;
-      ulimit -l;
-      # echo $PYTHONPATH;
+      # Install Jupyter if not already installed
+      # pip install jupyter;
+      python3 -m dragon.cli dragon-config add --ucx-runtime-lib=/usr/lib/x86_64-linux-gnu/ --ucx-include=/usr/include --ucx-build-lib=/usr/lib/x86_64-linux-gnu/;
       dragon-backend;
 
   env: {}
@@ -195,9 +183,9 @@ backend:
 
   resources:
     limits:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 4
     requests:
-      nvidia.com/gpu: 2
+      nvidia.com/gpu: 4
 
   livenessProbe: {}
   readinessProbe: {}
@@ -256,3 +244,8 @@ telemetryService:
 jupyter:
   enabled: true
   token: ""
+
+
+# The domain name of the endpoint used for the gateway.
+domain:
+  name:

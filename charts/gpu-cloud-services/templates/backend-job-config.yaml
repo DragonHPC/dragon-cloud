@@ -56,6 +56,13 @@ data:
             - name: backend
               image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag | default .Chart.AppVersion }}"
               imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+              {{- if .Values.frontend.workingDir }}
+              workingDir: {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }}
+              {{- else }}
+              {{- if gt (len .Values.frontend.volumeMounts) 1 }}
+              workingDir: {{ (index .Values.frontend.volumeMounts 1).mountPath }}
+              {{- end }}
+              {{- end }}
               {{- with .Values.backend.command }}
               command:
                 {{- toYaml . | nindent 16 }}
@@ -93,17 +100,23 @@ data:
                 - name: BACKEND_JOB_LABEL
                   value: {{ include "dragon.backendAppLabel" . | quote }}
                 - name: DRAGON_LOG_DEVICE_ACTOR_FILE
-                  value: "INFO"
+                  value: {{ "{{temp_log_value}}" | quote }}
                 # - name: PYTHONPATH
                 #   value: "/dragon-develop/hpc-pe-dragon-dragon-k8s-merge-develop/services-batch/src"
                 - name: DRAGON_TELEMETRY_LEVEL
                   value: {{ "{{temp_telemetry_level}}" | quote }}
+                - name: DRAGON_OVERLAY_TRANSPORT
+                  value: {{ "{{temp_overlay_transport}}" | quote }}
                 - name: DRAGON_FE_SDESC
                   value: {{ "{{temp_fe_sdesc}}" | quote }}
                 - name: FE_LABEL_SELECTOR
                   value: {{ "{{temp_fe_label}}" | quote }}
                 - name: {{ "{{DRAGON_FE_GW}}" | quote }}
                   value: {{ "{{temp_fe_gw}}" | quote }}
+                - name: RELEASE_NAME
+                  value: "{{ .Release.Name }}"
+                - name: DOMAIN_NAME
+                  value: {{ .Values.domain.name }}
                 {{- with .Values.backend.env }}
                 {{- toYaml . | nindent 16 }}
                 {{- end }}

@@ -9,9 +9,9 @@ such as the Distributed Dictionary, from a laptop to many nodes. The charts here
 several Kubernetes pods. Your code then runs across all of them.
 
 > [!IMPORTANT]
-> These charts are **examples**, not turnkey products. You need to supply your own container image and shared storage,
-> and you'll probably need to adjust resources and scheduling settings in `values.yaml` for your cluster. Each chart's
-> README lists the values to check.
+> These charts are **examples**, not turnkey products. You need to supply your own container image with Dragon
+> installed (`pip install dragonhpc`) and shared storage, and you'll probably need to adjust resources and scheduling
+> settings in `values.yaml` for your cluster. Each chart's README lists the values to check.
 
 ## Charts
 

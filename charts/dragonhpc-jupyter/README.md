@@ -2,9 +2,10 @@
 
 > [!IMPORTANT]
 > This is an **example** chart. It shows one way to use [Dragon](https://dragonhpc.org) interactively on
-> Kubernetes. You need to supply your own container image and shared storage, and you'll probably need to adjust the
-> resources and scheduling settings in `values.yaml` for your cluster. Treat the chart as a starting point, not as a
-> supported product.
+> Kubernetes. You need to supply your own container image with Dragon and Jupyter installed
+> (`pip install dragonhpc jupyter`) and shared storage, and you'll probably need to adjust the resources and
+> scheduling settings in `values.yaml` for your cluster. Treat the chart as a starting point, not as a supported
+> product.
 
 This chart starts a Dragon runtime that spans `backend.nnodes` pods and runs a Jupyter server inside that runtime.
 Notebook code can use Dragon's distributed `multiprocessing`, the Distributed Dictionary (`DDict`), and the rest of

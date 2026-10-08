@@ -6,9 +6,10 @@ This is an **example** chart. It starts a [Dragon](https://dragonhpc.org) runtim
 server inside it. Notebook code can use Dragon's distributed `multiprocessing`, Distributed Dictionary, and other APIs,
 and that work runs on all backend pods.
 
-Before you install, set the container image and create a `ReadWriteMany` PersistentVolumeClaim named `dragon-shared`
-(or point the chart at your own claim). You may also need to adjust GPU resources and tolerations for your cluster. The
-chart README describes these values.
+Before you install, set the container image to one that has Dragon and Jupyter installed
+(`pip install dragonhpc jupyter`), and create a `ReadWriteMany` PersistentVolumeClaim named `dragon-shared` (or point
+the chart at your own claim). You may also need to adjust GPU resources and tolerations for your cluster. The chart
+README describes these values.
 
 ## Before installing
 

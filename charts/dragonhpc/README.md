@@ -2,9 +2,9 @@
 
 > [!IMPORTANT]
 > This is an **example** chart. It shows one way to run a [Dragon](https://dragonhpc.org) program on Kubernetes. You
-> need to supply your own container image, shared storage, and program, and you'll probably need to adjust the
-> resources and scheduling settings in `values.yaml` for your cluster. Treat the chart as a starting point, not as a
-> supported product.
+> need to supply your own container image with Dragon installed (`pip install dragonhpc`), shared storage, and
+> program, and you'll probably need to adjust the resources and scheduling settings in `values.yaml` for your cluster.
+> Treat the chart as a starting point, not as a supported product.
 
 This chart runs one Python program under the Dragon runtime across `backend.nnodes` pods. Installing the release starts
 the runtime and runs your program. When the program exits, the runtime shuts down and the Jobs complete, much like a

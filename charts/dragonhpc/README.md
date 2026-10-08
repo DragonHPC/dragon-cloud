@@ -57,6 +57,8 @@ path in frontend and backend pods, either on a shared volume or built into the i
 - [Helm 3](https://helm.sh/docs/intro/install/) and `kubectl`.
 - One schedulable node per backend pod. The chart prefers to put backend pods on separate nodes and away from the
   frontend pod, but doesn't require it.
+- The frontend pod doesn't need a compute node. It only runs the Dragon launcher, so it can run on any node, such as a
+  service node without GPUs. To choose its node, set `frontend.nodeSelector`.
 - Permission to run **privileged** pods. Backend pods run privileged with the `IPC_LOCK`, `IPC_OWNER`, and
   `SYS_RESOURCE` capabilities, which Dragon needs for shared memory and RDMA. Namespaces that enforce the `baseline` or
   `restricted` [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/) reject

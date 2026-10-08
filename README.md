@@ -50,6 +50,9 @@ flowchart LR
    that run your code.
 4. The frontend Job owns the backend Job. Deleting the release or the frontend Job also removes the backend pods.
 
+The frontend pod only runs the Dragon launcher, so it doesn't need to be on a compute node. It can run on any node in
+the cluster, such as a service node without GPUs. To choose its node, set `frontend.nodeSelector`.
+
 ## Prerequisites
 
 - A Kubernetes cluster, plus [Helm 3](https://helm.sh/docs/intro/install/) and `kubectl` configured for it.

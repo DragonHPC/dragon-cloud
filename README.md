@@ -55,9 +55,7 @@ flowchart LR
 - A Kubernetes cluster, plus [Helm 3](https://helm.sh/docs/intro/install/) and `kubectl` configured for it.
 - Permission to run privileged pods in the target namespace. Dragon needs this for shared memory and RDMA.
 - A container image with Python, the `dragonhpc` package, and the `kubernetes` Python package. The Jupyter chart also
-  needs `jupyter`. To get started, see
-  [deploy/kubernetes/Dockerfile](https://github.com/DragonHPC/dragon/blob/main/deploy/kubernetes/Dockerfile) in the
-  Dragon repository.
+  needs `jupyter`.
 - A `ReadWriteMany` PersistentVolumeClaim that all pods share, for code, data, and logs.
 
 Each chart's README has the full list.

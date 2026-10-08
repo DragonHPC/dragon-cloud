@@ -30,6 +30,7 @@ frontend:
   imagePullSecrets: []
 
   workingDir:
+  batchName:
 
   command:
     - /bin/bash
@@ -98,18 +99,18 @@ frontend:
   livenessProbe: {}
   readinessProbe: {}
 
+  # A ReadWriteMany PVC shared by all pods. Mount it at the same path under backend.
   volumes:
-    - name: dragon-develop-volume
+    - name: shared
       persistentVolumeClaim:
-        claimName: dragon-develop-pvc
+        claimName: dragon-shared
 
+  # Pods start in <volumeMounts[0]>/<workingDir>/<batchName> if workingDir is set, else in volumeMounts[1] if present.
   volumeMounts:
-    - name: dragon-develop-volume
-      mountPath: /dragon-develop
+    - name: shared
+      mountPath: /shared
 
-  nodeSelector:
-    node-role.kubernetes.io/service: "true"
-    kubernetes.io/hostname: worker-01
+  nodeSelector: {}
 
   affinity: {}
 
@@ -191,16 +192,15 @@ backend:
   readinessProbe: {}
 
   volumes:
-    - name: dragon-develop-volume
+    - name: shared
       persistentVolumeClaim:
-        claimName: dragon-develop-pvc
+        claimName: dragon-shared
 
   volumeMounts:
-    - name: dragon-develop-volume
-      mountPath: /dragon-develop
+    - name: shared
+      mountPath: /shared
 
-  nodeSelector:
-    node-role.kubernetes.io/compute: "true"
+  nodeSelector: {}
 
   affinity: {}
 

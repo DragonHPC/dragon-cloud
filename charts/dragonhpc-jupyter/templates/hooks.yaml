@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "dragon.fullname" . }}-logs-cleanup
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      containers:
+      - name: dragon-logs-cleanup
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          {{- if .Values.frontend.workingDir }}
+          cd {{ (index .Values.frontend.volumeMounts 0).mountPath }}/{{ .Values.frontend.workingDir }}/{{ .Values.frontend.batchName }} && \
+          # use the Backend Job name to distinguish the log files to delete
+          rm -f *{{ include "dragon.fullname" . }}-backend*.log
+          {{- else if gt (len .Values.frontend.volumeMounts) 1 }}
+          cd {{ (index .Values.frontend.volumeMounts 1).mountPath }} && \
+          # use the Backend Job name to distinguish the log files to delete
+          rm -f *{{ include "dragon.fullname" . }}-backend*.log
+          {{- end }}
+        volumeMounts:
+          {{- with .Values.frontend.volumeMounts }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+      volumes:
+        {{- with .Values.frontend.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      restartPolicy: Never
+  backoffLimit: 0

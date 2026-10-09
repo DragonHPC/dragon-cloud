@@ -1,11 +1,11 @@
 annotations:
-  catalog.cattle.io/display-name: GPU Cloud Services Batch
+  catalog.cattle.io/display-name: DragonHPC Jupyter
   catalog.cattle.io/os: linux
   catalog.cattle.io/permits-os: linux
   catalog.cattle.io/featured: "1"
 apiVersion: v2
 appVersion: 0.12.0
-description: Dragon cluster running the GPU Cloud Services Batch service
+description: Example chart that runs a Jupyter server on a multi-pod Dragon runtime
 home: http://dragonhpc.org
 icon: https://dragonhpc.org/wp-content/uploads/2025/03/Color-logo-no-background.png
 keywords:
@@ -43,7 +43,7 @@ maintainers:
   name: Nick Radcliffe
 - email: colin.wahl@hpe.com
   name: Colin Wahl
-name: gpu-cloud-services
+name: dragonhpc-jupyter
 sources:
 - https://github.com/DragonHPC/dragon
 - https://developer.hpe.com/platform/dragonhpc/home/

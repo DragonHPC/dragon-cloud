@@ -15,25 +15,7 @@ To run a Python script to completion instead of working interactively, use the [
 
 ## How it works
 
-```mermaid
-flowchart LR
-    user(["Your browser"])
-    subgraph ns["Kubernetes namespace"]
-        cm[("ConfigMap<br/>backend Job template")]
-        fe["Frontend Job<br/>dragon-jupyter"]
-        subgraph be["Backend Job: backend.nnodes pods"]
-            b0["Pod 0<br/>dragon-backend + Jupyter server"]
-            bn["Pods 1..N-1<br/>dragon-backend"]
-        end
-        jsvc["Service<br/>backend-pods-service :8888"]
-        tsvc["Service<br/>telemetry-service :4242"]
-    end
-    cm --> fe
-    fe -- "creates" --> be
-    jsvc --> b0
-    tsvc -.-> be
-    user -- "kubectl port-forward" --> jsvc
-```
+![dragonhpc-jupyter chart: helm install creates the frontend Job and a ConfigMap. The frontend pod runs dragon-jupyter and creates the backend Job. Backend pod 0 runs the Jupyter server behind backend-pods-service, using the token from a Secret you create. You reach Jupyter with kubectl port-forward.](../../docs/images/dragonhpc-jupyter.svg)
 
 1. `helm install` creates a frontend Job, a ConfigMap that holds a template for the backend Job, two Services, and a
    ServiceAccount with RBAC rules for each tier.
@@ -65,9 +47,6 @@ flowchart LR
   - the `kubernetes` Python package, which Dragon uses to talk to the Kubernetes API
   - UCX libraries in `/usr/lib/x86_64-linux-gnu/`, if you keep the default high-speed transport setup in
     `frontend.args` and `backend.args`
-
-  [deploy/kubernetes/Dockerfile](https://github.com/DragonHPC/dragon/blob/main/deploy/kubernetes/Dockerfile) in the
-  Dragon repository is a good place to start.
 - A `ReadWriteMany` PersistentVolumeClaim that all pods can mount, for notebooks and data. The defaults expect a claim
   named `dragon-shared`, mounted at `/shared`.
 - Access to the `busybox` image, which the uninstall hook uses.

@@ -24,22 +24,7 @@ several Kubernetes pods. Your code then runs across all of them.
 
 Both charts use the same frontend/backend layout:
 
-```mermaid
-flowchart LR
-    helm(["helm install"])
-    subgraph ns["Kubernetes namespace"]
-        cm[("ConfigMap<br/>backend Job template")]
-        fe["Frontend Job (1 pod)<br/>Dragon launcher"]
-        subgraph be["Backend Job: backend.nnodes pods"]
-            b0["dragon-backend"]
-            b1["dragon-backend"]
-            bn["..."]
-        end
-    end
-    helm --> fe
-    cm --> fe
-    fe -- "creates through the Kubernetes API" --> be
-```
+![Architecture: helm install creates a frontend Job and a ConfigMap. The frontend pod runs the Dragon launcher on any node and creates a backend Job whose pods run on compute nodes. One Dragon runtime spans all backend pods, and every pod mounts a shared volume.](docs/images/architecture.svg)
 
 1. Helm creates a **frontend Job** with one pod, plus a ConfigMap that holds a template for the **backend Job**.
 2. The frontend pod starts the Dragon launcher: `dragon` for the dragonhpc chart, `dragon-jupyter` for the

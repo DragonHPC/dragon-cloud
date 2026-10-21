@@ -14,24 +14,7 @@ To work interactively in Jupyter instead, use the [dragonhpc-jupyter](../dragonh
 
 ## How it works
 
-```mermaid
-flowchart LR
-    subgraph ns["Kubernetes namespace"]
-        cm[("ConfigMaps<br/>backend Job template,<br/>pip requirements")]
-        fe["Frontend Job<br/>dragon your_script.py"]
-        subgraph be["Backend Job: backend.nnodes pods"]
-            b0["Pod 0<br/>dragon-backend<br/>runs your script"]
-            bn["Pods 1..N-1<br/>dragon-backend<br/>run worker processes"]
-        end
-        pvc[("Shared PVC<br/>scripts, data, logs")]
-        tsvc["Service<br/>release-telemetry :4242"]
-    end
-    cm --> fe
-    fe -- "creates" --> be
-    be --- pvc
-    fe --- pvc
-    tsvc -.-> be
-```
+![dragonhpc chart: helm install creates the frontend Job and ConfigMaps. The frontend pod runs dragon your_script.py and creates the backend Job. Backend pod 0 runs your script, the other backend pods run pool workers, and output streams back to the frontend log, which you read with kubectl logs.](../../docs/images/dragonhpc.svg)
 
 1. `helm install` creates a frontend Job, a ConfigMap that holds a template for the backend Job, a ConfigMap with
    optional pip requirements, a telemetry Service, and a ServiceAccount with RBAC rules for each tier.
@@ -68,9 +51,6 @@ path in frontend and backend pods, either on a shared volume or built into the i
   - the `kubernetes` Python package, which Dragon uses to talk to the Kubernetes API
   - UCX libraries in `/usr/lib/x86_64-linux-gnu/`, if you keep the default high-speed transport setup in
     `frontend.args` and `backend.args`
-
-  [deploy/kubernetes/Dockerfile](https://github.com/DragonHPC/dragon/blob/main/deploy/kubernetes/Dockerfile) in the
-  Dragon repository is a good place to start.
 - A `ReadWriteMany` PersistentVolumeClaim that all pods can mount, for your program, its data, and logs. The defaults
   expect a claim named `dragon-shared`, mounted at `/shared`.
 - Access to the `busybox` image, which the init container and the uninstall hook use.

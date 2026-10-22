@@ -10,7 +10,7 @@ several Kubernetes pods. Your code then runs across all of them.
 
 > [!IMPORTANT]
 > These charts are **examples**, not turnkey products. You need to supply your own container image with Dragon
-> installed (`pip install dragonhpc`) and shared storage, and you'll probably need to adjust resources and scheduling
+> installed (`pip install dragonhpc` or `pip install dragonhpc[telemetry]` if you want to also use dragon telemetry) and shared storage, and you'll probably need to adjust resources and scheduling
 > settings in `values.yaml` for your cluster. Each chart's README lists the values to check.
 
 ## Charts

@@ -1,4 +1,4 @@
-<img src="Color-logo-no-background.png" alt="DragonHPC" width="600">
+<img src="../../Color-logo-no-background.png" alt="DragonHPC" width="600">
 
 # DragonHPC Jupyter
 

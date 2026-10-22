@@ -1,4 +1,4 @@
-<img src="https://dragonhpc.org/wp-content/uploads/2025/03/Color-logo-no-background.png" width="600">
+<img src="../../Color-logo-no-background.png" alt="DragonHPC" width="600">
 
 # DragonHPC Jupyter
 
@@ -7,7 +7,7 @@ server inside it. Notebook code can use Dragon's distributed `multiprocessing`, 
 and that work runs on all backend pods.
 
 Before you install, set the container image to one that has Dragon and Jupyter installed
-(`pip install dragonhpc jupyter`), and create a `ReadWriteMany` PersistentVolumeClaim named `dragon-shared` (or point
+(`pip install dragonhpc jupyter` or `pip install dragonhpc[telemetry] jupyter` if you want to also use dragon telemetry), and create a `ReadWriteMany` PersistentVolumeClaim named `dragon-shared` (or point
 the chart at your own claim). You may also need to adjust GPU resources and tolerations for your cluster. The chart
 README describes these values.
 

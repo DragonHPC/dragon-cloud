@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > This is an **example** chart. It shows one way to use [Dragon](https://dragonhpc.org) interactively on
 > Kubernetes. You need to supply your own container image with Dragon and Jupyter installed
-> (`pip install dragonhpc jupyter`) and shared storage, and you'll probably need to adjust the resources and
+> (`pip install dragonhpc jupyter` or `pip install dragonhpc[telemetry] jupyter` if you want to also use dragon telemetry) and shared storage, and you'll probably need to adjust the resources and
 > scheduling settings in `values.yaml` for your cluster. Treat the chart as a starting point, not as a supported
 > product.
 
@@ -42,7 +42,7 @@ To run a Python script to completion instead of working interactively, use the [
   `restricted` [Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/) reject
   these pods.
 - A container image for both frontend and backend pods. The image needs:
-  - Python with the `dragonhpc` package (`pip install dragonhpc`), ideally at the chart's `appVersion` (`0.12.0`)
+  - Python with the `dragonhpc` package (`pip install dragonhpc` or `pip install dragonhpc[telemetry]` if you want to also use dragon telemetry), ideally at the chart's `appVersion` (`0.12.0`)
   - `jupyter`
   - the `kubernetes` Python package, which Dragon uses to talk to the Kubernetes API
   - UCX libraries in `/usr/lib/x86_64-linux-gnu/`, if you keep the default high-speed transport setup in
